@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "664910367649",
+    "project_id": "pathoptimization",
+    "storage_bucket": "pathoptimization.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664910367649:android:d74ce7a88fe05a33bb99e0",
+        "android_client_info": {
+          "package_name": "com.example.path_optimize_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCC8jNDxIZC8EaXamed4wRsofrvO80jJwg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
