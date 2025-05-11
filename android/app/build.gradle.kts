@@ -28,8 +28,8 @@ android {
         applicationId = "com.example.path_optimize_android"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 23 //flutter.minSdkVersion
+        targetSdk = 24 //flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -45,4 +45,13 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("com.google.android.libraries.navigation:navigation:5.0.0"){
+        exclude(group = "com.google.android.gms", module = "play-services-maps")
+        exclude(group = "com.google.android.gms", module = "play-services-location")
+        exclude(group = "com.google.android.libraries.places", module = "places")
+    }
+    // Các dòng khác Flutter đã có sẵn
 }
