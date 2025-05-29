@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_webservice/places.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
-import '../models/fleet_routing_model.dart' as fleet_model;
+import 'package:google_places_flutter/model/prediction.dart';
 
 const String kGoogleApiKey = 'AIzaSyApH0OAcrcn7tobzhy_I-vEciHInXknxrU';
 
 class LocationPoint {
   String address;
-  double lat;
-  double lng;
+  String placeId;
 
-  LocationPoint({required this.address, required this.lat, required this.lng});
+  LocationPoint({required this.address, required this.placeId});
 }
 
 class Order {
@@ -44,12 +42,12 @@ class _OrderInputScreenState extends State<OrderInputScreen> {
   void _removeOrder(int index) => setState(() => _orders.removeAt(index));
   void _addPickupPoint(int orderIndex) => setState(
     () => _orders[orderIndex].pickupAddresses.add(
-      LocationPoint(address: '', lat: 0, lng: 0),
+      LocationPoint(address: '', placeId: ''),
     ),
   );
   void _addDropoffPoint(int orderIndex) => setState(
     () => _orders[orderIndex].dropoffAddresses.add(
-      LocationPoint(address: '', lat: 0, lng: 0),
+      LocationPoint(address: '', placeId: ''),
     ),
   );
   void _removePickupPoint(int orderIndex, int pointIndex) =>
@@ -79,23 +77,27 @@ class _OrderInputScreenState extends State<OrderInputScreen> {
       ),
       debounceTime: 400,
       countries: const ["vn"],
-      isLatLngRequired: true,
-      getPlaceDetailWithLatLng: (prediction) async {
+      isLatLngRequired: false,
+      itemClick: (Prediction prediction) {
         final address = prediction.description ?? '';
-        final lat = double.tryParse(prediction.lat ?? '') ?? 0.0;
-        final lng = double.tryParse(prediction.lng ?? '') ?? 0.0;
+        final placeId = prediction.placeId ?? '';
 
         setState(() {
-          final point = LocationPoint(address: address, lat: lat, lng: lng);
           if (isPickup) {
-            _orders[orderIndex].pickupAddresses[pointIndex] = point;
+            _orders[orderIndex].pickupAddresses[pointIndex] = LocationPoint(
+              address: address,
+              placeId: placeId,
+            );
           } else {
-            _orders[orderIndex].dropoffAddresses[pointIndex] = point;
+            _orders[orderIndex].dropoffAddresses[pointIndex] = LocationPoint(
+              address: address,
+              placeId: placeId,
+            );
           }
         });
-      },
-      itemClick: (prediction) {
-        controller.text = prediction.description!;
+
+        // Cập nhật text trong TextField
+        controller.text = address;
         controller.selection = TextSelection.fromPosition(
           TextPosition(offset: controller.text.length),
         );
@@ -107,7 +109,7 @@ class _OrderInputScreenState extends State<OrderInputScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: isPickup ? Colors.green[10] : Colors.blue[10],
+        color: isPickup ? Colors.green[50] : Colors.blue[50],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isPickup ? Colors.green : Colors.blue,
@@ -172,10 +174,10 @@ class _OrderInputScreenState extends State<OrderInputScreen> {
             ),
             TextButton.icon(
               onPressed: () => _addPickupPoint(index),
-              icon: const Icon(Icons.add_circle, color: Colors.grey),
+              icon: const Icon(Icons.add, color: Colors.green),
               label: const Text(
                 'Thêm điểm lấy',
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: Colors.green),
               ),
             ),
             const SizedBox(height: 8),
@@ -188,10 +190,10 @@ class _OrderInputScreenState extends State<OrderInputScreen> {
             ),
             TextButton.icon(
               onPressed: () => _addDropoffPoint(index),
-              icon: const Icon(Icons.add_circle, color: Colors.grey),
+              icon: const Icon(Icons.add, color: Colors.blue),
               label: const Text(
                 'Thêm điểm trả',
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: Colors.blue),
               ),
             ),
           ],
@@ -203,6 +205,7 @@ class _OrderInputScreenState extends State<OrderInputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Nhập đơn hàng')),
       body: ListView.builder(
         padding: const EdgeInsets.all(12),
         itemCount: _orders.length + 1,
